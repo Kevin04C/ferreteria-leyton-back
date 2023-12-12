@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NewSaleRequest;
+use App\Http\Resources\GetSalesUserCollection;
 use App\Http\Resources\SalesCollection;
 use App\Http\Resources\SalesResource;
 use App\Models\DetalleVentum;
@@ -30,6 +31,7 @@ class SaleController extends Controller
             $sale->apellidos = $request->apellidos;
             $sale->fecha = now();
             $sale->vendedor = $request->vendedor_id;
+            $sale->vendido = true;
             $sale->save();
 
             $products = $request->productos;
@@ -131,6 +133,48 @@ class SaleController extends Controller
             return response()->json([
                 'type' => 'error',
                 'messages' => ['Error interno del servidor'],
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function getSalesUser(Request $request)
+    {
+        try {
+
+            $user = auth()->user();
+
+            $sales = Venta::where('vendedor', $user->id)
+                ->where('vendido', false)
+                ->get();
+
+            $data = [];
+            foreach ($sales as $sale) {
+                $saleDetails = DetalleVentum::where('venta_id', $sale->id_venta)->get();
+                foreach ($saleDetails as $saleDetail) {
+                    $product = Producto::find($saleDetail->producto_id);
+                    $data[] = [
+                        'id' => $saleDetail->id,
+                        'nombre' => $product->nombre,
+                        'fecha' => $sale->fecha,
+                        'imagen' => $product->imagen,
+                        'precio' => $product->precio,
+                        'cantidad' => $saleDetail->cantidad,
+                        'total' => $saleDetail->total
+                    ];
+                }
+
+            }
+
+            return response()->json([
+                'type' => 'success',
+                'messages' => ['Ventas obtenidas correctamente'],
+                'data' => $data
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'type' => 'error',
+                'messages' => ['Error interno del servidor' . $th->getMessage()],
                 'data' => []
             ], 500);
         }

@@ -83,6 +83,8 @@ class PaymentController extends Controller
                 'dni' => $user->dni,
                 'nombres' => $user->nombre,
                 'apellidos' => $user->apellidos,
+                'vendedor' => $user->id,
+                'vendido' => false
             ]);
 
             $cart = Carrito::where('usuario_id', $user->id)->first();

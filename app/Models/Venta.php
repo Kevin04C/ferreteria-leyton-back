@@ -33,7 +33,8 @@ class Venta extends Model
 
 	protected $casts = [
 		'fecha' => 'datetime',
-		'vendedor' => 'int'
+		'vendedor' => 'int',
+		'vendido' => 'bool'
 	];
 
 	protected $fillable = [
@@ -41,7 +42,8 @@ class Venta extends Model
 		'nombres',
 		'apellidos',
 		'fecha',
-		'vendedor'
+		'vendedor',
+		'vendido'
 	];
 
 	public function usuario()

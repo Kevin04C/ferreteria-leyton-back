@@ -33,6 +33,7 @@ Route::get("/auth/renew", [AuthController::class, 'renewToken']);
 
 // productos
 Route::get("/productos", [ProductoController::class, 'obtenerProductosPaginados']);
+Route::get("/productos/random", [ProductoController::class, 'getRandomProducts']);
 Route::get('/producto/all-active', [ProductoController::class, 'getAllProductActive']);
 Route::get('/producto/total', [ProductoController::class, 'getTotalProducts']);
 Route::get('/producto/{id}', [ProductoController::class, 'obtenerProductoPorId']);
@@ -64,6 +65,7 @@ Route::get('/dni/search', [DNIController::class, 'searchUser']);
 Route::post('/sales', [SaleController::class, 'newSale']);
 Route::get('/sales', [SaleController::class, 'getSales']);
 Route::get('/sales/total', [SaleController::class, 'getTotalSales']);
+Route::get('/sales/user', [SaleController::class, 'getSalesUser']);
 
 //reports 
 Route::get('/reports/customer-purchases', [ReportsController::class, 'getCustomerPurchases']);

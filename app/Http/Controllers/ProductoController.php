@@ -19,9 +19,18 @@ class ProductoController extends Controller
             $search = $request->query('search');
             $maxPrice = $request->query('maxPrice');
             $minPrice = $request->query('minPrice', 0);
+            $categories = json_decode($request->query('categories'));
 
             $paginator = Producto::where('nombre', 'like', "%$search%")
                 ->paginate(10);
+
+
+            if ($categories) {
+                $paginator = Producto::where('nombre', 'like', "%$search%")
+                    ->whereIn('categoria_id', $categories)
+                    ->paginate(10);
+
+            }
 
             // trae los productos que esten en el rango de precio
             if ($maxPrice) {
@@ -224,6 +233,28 @@ class ProductoController extends Controller
     {
         try {
             $products = Producto::where('estado', 1)->get();
+            return response()->json([
+                'type' => 'success',
+                'messages' => [],
+                'data' => new ProductoCollection($products)
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'type' => 'error',
+                'messages' => ['Error interno del servidor'],
+                'data' => []
+            ], 500);
+
+        }
+    }
+
+    public function getRandomProducts()
+    {
+        try {
+            $products = Producto::where('estado', 1)
+                ->inRandomOrder()
+                ->limit(6)
+                ->get();
             return response()->json([
                 'type' => 'success',
                 'messages' => [],
